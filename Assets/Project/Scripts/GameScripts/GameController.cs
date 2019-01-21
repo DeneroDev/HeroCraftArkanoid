@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour {
     private static GameController instance;
-
     public enum GameState { start, game, pause, end }
     private GameState currentState = GameState.start;
     [Header("StartConfig")]
@@ -33,9 +32,10 @@ public class GameController : MonoBehaviour {
     [SerializeField]
     private BonusController bonusController;
     private int score = 0;
-    private List<GameObject> levelsBlocks = new List<GameObject>();
     private int blocksCount;
     private int currentLevel = 1;
+
+    private List<GameObject> levelsBlocks = new List<GameObject>();
     private List<GameObject> balls = new List<GameObject>();
     private List<Rigidbody2D> ballsRb = new List<Rigidbody2D>();
 
@@ -62,7 +62,6 @@ public class GameController : MonoBehaviour {
         return instance;
     }
 
-    // Use this for initialization
     void Start() {
         instance = this;
     }
@@ -70,21 +69,25 @@ public class GameController : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         switch (CurrentState) {
-            case GameState.start:
-
-                break;
             case GameState.game:
+                Time.timeScale = 1f;
                 SpeedLimittedBall();
                 break;
             case GameState.pause:
-
-                break;
-            case GameState.end:
-
+                Time.timeScale = 0.00001f;
                 break;
         }
     }
 
+    public void SetPauseState() {
+        CurrentState = GameState.pause;
+        uiController.OnPause();
+    }
+
+    public void BackFromPause() {
+        CurrentState = GameState.game;
+        uiController.OffPause();
+    }
 
     public void GenerationLevel() {
         levelGeneration.ImageGenerationLevel(currentLevel);
@@ -186,7 +189,7 @@ public class GameController : MonoBehaviour {
         playerC.transform.localPosition = new Vector3(0, -4.9f,0);
     }
 
-    public void SubBlock() {
+    public void SubtractionBlock() {
         blocksCount--;
         SoundController.PlaySoundBreakSound();
         if (blocksCount <= 0)

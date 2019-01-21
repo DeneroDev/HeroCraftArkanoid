@@ -20,6 +20,8 @@ public class UIController : MonoBehaviour {
     [SerializeField]
     private Text textScore;
     [SerializeField]
+    private RectTransform pauseBtn;
+    [SerializeField]
     private RectTransform panelPreGame;
     [SerializeField]
     private RectTransform panelGoodEndGame;
@@ -27,81 +29,87 @@ public class UIController : MonoBehaviour {
     private RectTransform panelBadEndGame;
     [SerializeField]
     private Text finalScoreText;
+    [SerializeField]
+    private RectTransform panelPauseGame;
 
     // Use this for initialization
     void Start () {
         DOTween.Init();
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
 
     public void OnMenu() {
         OffGame();
-        BackgroundUIMenu.DOAnchorPos(new Vector2(0, 0), 1);
-        StartGameBtn.DOAnchorPos(new Vector2(-395, 400), 1);
-        SettingGameBtn.DOAnchorPos(new Vector2(-240, 250), 1);
-        QuitGameBtn.DOAnchorPos(new Vector2(-150, 110), 1);
+        BackgroundUIMenu.DOAnchorPos(new Vector2(0, 0), Data.TIME_SLIDE_ANIM_PANEL);
+        StartGameBtn.DOAnchorPos(new Vector2(-395, 400), Data.TIME_SLIDE_ANIM_PANEL);
+        SettingGameBtn.DOAnchorPos(new Vector2(-240, 250), Data.TIME_SLIDE_ANIM_PANEL);
+        QuitGameBtn.DOAnchorPos(new Vector2(-150, 110), Data.TIME_SLIDE_ANIM_PANEL);
     }
 
     public void OnPanelLevel() {
-        PanelLevel.DOAnchorPos(Vector2.zero, 1);
+        PanelLevel.DOAnchorPos(Vector2.zero, Data.TIME_SLIDE_ANIM_PANEL);
     }
 
     public void OffPanelLevel()
     {
-        PanelLevel.DOAnchorPos(new Vector2(2000,0), 1);
+        PanelLevel.DOAnchorPos(new Vector2(2000,0), Data.TIME_SLIDE_ANIM_PANEL);
     }
 
     public void OffMenu()
     {
-        BackgroundUIMenu.DOAnchorPos(new Vector2(-2000, 0), 1);
-        StartGameBtn.DOAnchorPos(new Vector2(395, 400), 1);
-        SettingGameBtn.DOAnchorPos(new Vector2(240, 250), 1);
-        QuitGameBtn.DOAnchorPos(new Vector2(150, 110), 1);
+        BackgroundUIMenu.DOAnchorPos(new Vector2(-2000, 0), Data.TIME_SLIDE_ANIM_PANEL);
+        StartGameBtn.DOAnchorPos(new Vector2(395, 400), Data.TIME_SLIDE_ANIM_PANEL);
+        SettingGameBtn.DOAnchorPos(new Vector2(240, 250), Data.TIME_SLIDE_ANIM_PANEL);
+        QuitGameBtn.DOAnchorPos(new Vector2(150, 110), Data.TIME_SLIDE_ANIM_PANEL);
         OnGame();
         OnPreGamePanel();
     }
 
     public void OnPreGamePanel() {
-        panelPreGame.DOAnchorPos(Vector2.zero, 1);
+        panelPreGame.DOAnchorPos(Vector2.zero, Data.TIME_SLIDE_ANIM_PANEL);
     }
 
     public void OffPreGamePanel() {
-        panelPreGame.DOAnchorPos(new Vector2(0, -1000), 1);
+        panelPreGame.DOAnchorPos(new Vector2(0, -1000), Data.TIME_SLIDE_ANIM_PANEL);
     }
 
     public void OnEndGamePanel(bool dead)
     {
         if (dead)
         {
-            panelBadEndGame.DOAnchorPos(Vector2.zero, 1);
+            panelBadEndGame.DOAnchorPos(Vector2.zero, Data.TIME_SLIDE_ANIM_PANEL);
         }
         else {
-            panelGoodEndGame.DOAnchorPos(Vector2.zero, 1);
+            panelGoodEndGame.DOAnchorPos(Vector2.zero, Data.TIME_SLIDE_ANIM_PANEL);
             finalScoreText.text = "SCORE:" + GameController.GetInstance().GetScore();
         }
-            
     }
 
 
     public void OffEndGamePanel()
     {
-            panelBadEndGame.DOAnchorPos(new Vector2(0, -1000), 1);
-            panelGoodEndGame.DOAnchorPos(new Vector2(0, -1000), 1);
+            panelBadEndGame.DOAnchorPos(new Vector2(0, -1000), Data.TIME_SLIDE_ANIM_PANEL);
+            panelGoodEndGame.DOAnchorPos(new Vector2(0, -1000), Data.TIME_SLIDE_ANIM_PANEL);
     }
 
     public void OnGame() {
-        textScore.rectTransform.DOAnchorPos(new Vector2(150, -150), 1);
+        textScore.rectTransform.DOAnchorPos(new Vector2(150, -150), Data.TIME_SLIDE_ANIM_PANEL);
+        pauseBtn.DOAnchorPos(new Vector2(-200, -150), Data.TIME_SLIDE_ANIM_PANEL);
     }
 
 
     public void OffGame()
     {
-        textScore.rectTransform.DOAnchorPos(new Vector2(-200, -150), 1);
+        textScore.rectTransform.DOAnchorPos(new Vector2(-200, -150), Data.TIME_SLIDE_ANIM_PANEL);
+    }
+
+    public void OnPause() {
+        panelPauseGame.DOAnchorPos(Vector2.zero, Data.TIME_SLIDE_ANIM_PANEL);
+    }
+
+    public void OffPause()
+    {
+        panelPauseGame.DOAnchorPos(new Vector2(0,-1000), Data.TIME_SLIDE_ANIM_PANEL);
     }
 
     public void ScoreUpdate(int score) {

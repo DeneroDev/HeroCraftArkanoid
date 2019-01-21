@@ -75,13 +75,13 @@ public class Block : MonoBehaviour
 
 
 
-    private void DestroyBlock(int score, bool ignoreSub)
+    private void DestroyBlock(int score, bool ignoreSubtraction)
     {
         Destroying = true;
         Instantiate(effectDestroy, transform.position, Quaternion.identity);
         GameController.GetInstance().AddScore(score);
-        if (!ignoreSub)
-            GameController.GetInstance().SubBlock();
+        if (!ignoreSubtraction)
+            GameController.GetInstance().SubtractionBlock();
         CheckBonus();
         Destroy(gameObject);
     }
@@ -90,10 +90,10 @@ public class Block : MonoBehaviour
     private void CheckBonus()
     {
         var chanceBonus = Random.Range(0, 100.99f);
-        if (chanceBonus > 80)
+        if (chanceBonus > (100-Data.BONUS_CHANCE_PRECENT_ELONGATION))
         {
-            if (chanceBonus > 90)
-                if (chanceBonus > 95)
+            if (chanceBonus > (100-Data.BONUS_CHANCE_PRECENT_MULTIPLICATION))
+                if (chanceBonus > (100-Data.BONUS_CHANCE_PRECENT_INVULNEARBILITY))
                     GameController.GetInstance().GetBonusController().AddBonusItemToList(Instantiate(BonusInvulnerability, transform.position, Quaternion.identity));
                 else
                     GameController.GetInstance().GetBonusController().AddBonusItemToList(Instantiate(BonusMultiplication, transform.position, Quaternion.identity));

@@ -9,15 +9,15 @@ public class GameController : MonoBehaviour {
     [Header("StartConfig")]
     [SerializeField]
     [Range(100, 1000)]
-    private float StartForce = 500;
+    private float _startForce = 500;
     [SerializeField]
-    private Vector2 StartVector;
+    private Vector2 _startVector;
     [Range(5, 10)]
     [SerializeField]
-    private float maxVelocityBall = 10;
+    private float _maxVelocityBall = 10;
     [Range(1, 5)]
     [SerializeField]
-    private float minVelocityBall = 3;
+    private float _minVelocityBall = 3;
     [Header("GameComponents")]
     [SerializeField]
     private GameObject BallPrefab;
@@ -37,7 +37,6 @@ public class GameController : MonoBehaviour {
 
     private List<GameObject> levelsBlocks = new List<GameObject>();
     private List<GameObject> balls = new List<GameObject>();
-    private List<Rigidbody2D> ballsRb = new List<Rigidbody2D>();
 
     public GameState CurrentState
     {
@@ -49,6 +48,58 @@ public class GameController : MonoBehaviour {
         set
         {
             currentState = value;
+        }
+    }
+
+    public float MinVelocityBall
+    {
+        get
+        {
+            return _minVelocityBall;
+        }
+
+        set
+        {
+            _minVelocityBall = value;
+        }
+    }
+
+    public float MaxVelocityBall
+    {
+        get
+        {
+            return _maxVelocityBall;
+        }
+
+        set
+        {
+            _maxVelocityBall = value;
+        }
+    }
+
+    public float StartForce
+    {
+        get
+        {
+            return _startForce;
+        }
+
+        set
+        {
+            _startForce = value;
+        }
+    }
+
+    public Vector2 StartVector
+    {
+        get
+        {
+            return _startVector;
+        }
+
+        set
+        {
+            _startVector = value;
         }
     }
 
@@ -66,15 +117,14 @@ public class GameController : MonoBehaviour {
         instance = this;
     }
 
-    // Update is called once per frame
+
     void Update() {
         switch (CurrentState) {
             case GameState.game:
                 Time.timeScale = 1f;
-                SpeedLimittedBall();
                 break;
             case GameState.pause:
-                Time.timeScale = 0.00001f;
+                Time.timeScale = 0;
                 break;
         }
     }
@@ -101,13 +151,12 @@ public class GameController : MonoBehaviour {
         currentState = GameState.game;
         var ball = Instantiate(BallPrefab, new Vector3(0, -4.6f, 0), Quaternion.identity);
         AddBall(ball);
-        ballsRb[0].AddForce(StartVector * StartForce);
+        ball.GetComponent<BallController>().ActivatedBall();
         uiController.OffPreGamePanel();
     }
 
     public void AddBall(GameObject ball) {
         balls.Add(ball);
-        ballsRb.Add(ball.GetComponent<Rigidbody2D>());
     }
 
     public int GetBallsCount() {
@@ -116,7 +165,6 @@ public class GameController : MonoBehaviour {
 
     public void DeleteBalls(GameObject ball) {
         balls.Remove(ball);
-        ballsRb.Remove(ball.GetComponent<Rigidbody2D>());
         Destroy(ball);
     }
 
@@ -137,8 +185,8 @@ public class GameController : MonoBehaviour {
             currentState = GameState.end;
             uiController.OnEndGamePanel(dead);
             for (int i = 0; i < balls.Count; i++) {
-                if (ballsRb[i] != null)
-                    ballsRb[i].Sleep();
+                if (balls != null)
+                    balls[i].GetComponent<BallController>().SleepRb();
             }
             return false;
         }
@@ -149,34 +197,8 @@ public class GameController : MonoBehaviour {
         uiController.ScoreUpdate(this.score);
     }
 
-    private void SpeedLimittedBall() {
-        for (int i = 0; i < balls.Count; i++) {
-            if (ballsRb[i] != null) {
-                if (ballsRb[i].velocity.x < -maxVelocityBall)
-                    ballsRb[i].velocity = new Vector2(-maxVelocityBall, ballsRb[i].velocity.y);
-                if (ballsRb[i].velocity.y < -maxVelocityBall)
-                    ballsRb[i].velocity = new Vector2(ballsRb[i].velocity.x, -maxVelocityBall);
-                if (ballsRb[i].velocity.x > maxVelocityBall)
-                    ballsRb[i].velocity = new Vector2(maxVelocityBall, ballsRb[i].velocity.y);
-                if (ballsRb[i].velocity.y > maxVelocityBall)
-                    ballsRb[i].velocity = new Vector2(ballsRb[i].velocity.x, maxVelocityBall);
-                if (ballsRb[i].velocity.y < minVelocityBall && ballsRb[i].velocity.y > 0)
-                    ballsRb[i].velocity = new Vector2(ballsRb[i].velocity.x, minVelocityBall);
-                if (ballsRb[i].velocity.x < minVelocityBall && ballsRb[i].velocity.x > 0)
-                    ballsRb[i].velocity = new Vector2(minVelocityBall, ballsRb[i].velocity.y);
-                if (ballsRb[i].velocity.y > -minVelocityBall && ballsRb[i].velocity.y < 0)
-                    ballsRb[i].velocity = new Vector2(ballsRb[i].velocity.x, -minVelocityBall);
-                if (ballsRb[i].velocity.x > -minVelocityBall && ballsRb[i].velocity.x < 0)
-                    ballsRb[i].velocity = new Vector2(-minVelocityBall, ballsRb[i].velocity.y);
-            }
-           
-        }
-       
-    }
+    
 
-    public static bool predicate() {
-        return true;
-    }
 
     public void ReturnInitially() {
         uiController.OffEndGamePanel();
@@ -184,7 +206,6 @@ public class GameController : MonoBehaviour {
         levelsBlocks.RemoveAll(levelsBlocks => { Destroy(levelsBlocks); return true; });
         bonusController.GetBonusList().RemoveAll(bonusController=> { Destroy(bonusController); return true; });
         balls.RemoveAll(balls => { Destroy(balls); return true; });
-        ballsRb.RemoveAll(balls => true);
         score = 0;
         playerC.transform.localPosition = new Vector3(0, -4.9f,0);
     }

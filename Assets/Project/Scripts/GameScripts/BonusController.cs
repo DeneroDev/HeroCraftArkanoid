@@ -28,7 +28,7 @@ public class BonusController : MonoBehaviour {
                     }
                 }
                 if (ball != null) {
-                    ball.GetComponent<Rigidbody2D>().AddForce(new Vector2(100, 300));
+                    ball.GetComponent<BallController>().ActivatedBall();
                     GameController.GetInstance().AddBall(ball);
                 }
                 break;

@@ -8,7 +8,7 @@ public class BallController : MonoBehaviour {
 
 	void Update () {
         if(GameController.GetInstance().CurrentState == GameController.GameState.game)
-            SpeedLimittedBall();
+            SpeedLimittedBall(GameController.GetInstance().MaxVelocityBall, GameController.GetInstance().MinVelocityBall);
     }
 
     public void ActivatedBall() {
@@ -22,27 +22,25 @@ public class BallController : MonoBehaviour {
         _rigidbody2d.Sleep();
     }
 
-    private void SpeedLimittedBall()
+    private void SpeedLimittedBall(float maxVelocity, float minVelocity)
     {
-
-                if (_rigidbody2d.velocity.x < -GameController.GetInstance().MaxVelocityBall)
-                    _rigidbody2d.velocity = new Vector2(-GameController.GetInstance().MaxVelocityBall, _rigidbody2d.velocity.y);
-                if (_rigidbody2d.velocity.y < -GameController.GetInstance().MaxVelocityBall)
-                    _rigidbody2d.velocity = new Vector2(_rigidbody2d.velocity.x, -GameController.GetInstance().MaxVelocityBall);
-                if (_rigidbody2d.velocity.x > GameController.GetInstance().MaxVelocityBall)
-                    _rigidbody2d.velocity = new Vector2(GameController.GetInstance().MaxVelocityBall, _rigidbody2d.velocity.y);
-                if (_rigidbody2d.velocity.y > GameController.GetInstance().MaxVelocityBall)
-                    _rigidbody2d.velocity = new Vector2(_rigidbody2d.velocity.x, GameController.GetInstance().MaxVelocityBall);
-                if (_rigidbody2d.velocity.y < GameController.GetInstance().MinVelocityBall && _rigidbody2d.velocity.y > 0)
-                    _rigidbody2d.velocity = new Vector2(_rigidbody2d.velocity.x, GameController.GetInstance().MinVelocityBall);
-                if (_rigidbody2d.velocity.x < GameController.GetInstance().MinVelocityBall && _rigidbody2d.velocity.x > 0)
-                    _rigidbody2d.velocity = new Vector2(GameController.GetInstance().MinVelocityBall, _rigidbody2d.velocity.y);
-                if (_rigidbody2d.velocity.y > -GameController.GetInstance().MinVelocityBall && _rigidbody2d.velocity.y < 0)
-                    _rigidbody2d.velocity = new Vector2(_rigidbody2d.velocity.x, -GameController.GetInstance().MinVelocityBall);
-                if (_rigidbody2d.velocity.x > -GameController.GetInstance().MinVelocityBall && _rigidbody2d.velocity.x < 0)
-                    _rigidbody2d.velocity = new Vector2(-GameController.GetInstance().MinVelocityBall, _rigidbody2d.velocity.y);
-
-        Debug.Log("X:"+_rigidbody2d.velocity.x +"/ Y:" +_rigidbody2d.velocity.y);
+                if (_rigidbody2d.velocity.x < -maxVelocity)
+                    _rigidbody2d.velocity = new Vector2(-maxVelocity, _rigidbody2d.velocity.y);
+                if (_rigidbody2d.velocity.y < -maxVelocity)
+                    _rigidbody2d.velocity = new Vector2(_rigidbody2d.velocity.x, -maxVelocity);
+                if (_rigidbody2d.velocity.x > maxVelocity)
+                    _rigidbody2d.velocity = new Vector2(maxVelocity, _rigidbody2d.velocity.y);
+                if (_rigidbody2d.velocity.y > maxVelocity)
+                    _rigidbody2d.velocity = new Vector2(_rigidbody2d.velocity.x, maxVelocity);
+                if (_rigidbody2d.velocity.y < minVelocity && _rigidbody2d.velocity.y > 0)
+                    _rigidbody2d.velocity = new Vector2(_rigidbody2d.velocity.x, minVelocity);
+                if (_rigidbody2d.velocity.x < minVelocity && _rigidbody2d.velocity.x > 0)
+                    _rigidbody2d.velocity = new Vector2(minVelocity, _rigidbody2d.velocity.y);
+                if (_rigidbody2d.velocity.y > -minVelocity && _rigidbody2d.velocity.y < 0)
+                    _rigidbody2d.velocity = new Vector2(_rigidbody2d.velocity.x, -minVelocity);
+                if (_rigidbody2d.velocity.x > -minVelocity && _rigidbody2d.velocity.x < 0)
+                    _rigidbody2d.velocity = new Vector2(-minVelocity, _rigidbody2d.velocity.y);
+        //Debug.Log("X:"+_rigidbody2d.velocity.x +"/ Y:" +_rigidbody2d.velocity.y);
     }
 
     }

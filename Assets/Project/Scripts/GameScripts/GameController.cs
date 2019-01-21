@@ -163,7 +163,7 @@ public class GameController : MonoBehaviour {
         return balls.Count;
     }
 
-    public void DeleteBalls(GameObject ball) {
+    public void DeleteBall(GameObject ball) {
         balls.Remove(ball);
         Destroy(ball);
     }

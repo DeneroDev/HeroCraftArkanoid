@@ -8,7 +8,7 @@ public class DeadZone : MonoBehaviour {
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Ball")) {
             if (GameController.GetInstance().SetStateEnd(true))
-                GameController.GetInstance().DeleteBalls(collision.gameObject);
+                GameController.GetInstance().DeleteBall(collision.gameObject);
         }
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("Bonus")) {

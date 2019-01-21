@@ -24,8 +24,7 @@ public class Block : MonoBehaviour
     {
         if (currentType == BlockType.repeatedly)
         {
-
-            Health = Random.Range(1, 5);
+            Health = Random.Range(1, 3);
             textHealth.text = Health.ToString();
         }
     }

@@ -11,6 +11,14 @@ public class MovingController : MonoBehaviour {
     private readonly float border = 8.2f;
     private bool visible = false;
 
+    public float Border
+    {
+        get
+        {
+            return border;
+        }
+    }
+
 
     // Use this for initialization
     void Start () {

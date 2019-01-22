@@ -5,6 +5,13 @@ using UnityEngine;
 public class BonusController : MonoBehaviour {
     public enum BonusState { multiplication, invulnerability, elongation }
     private List<GameObject> bonusList = new List<GameObject>();
+    [SerializeField]
+    private GameObject BonusMultiplication;
+    [SerializeField]
+    private GameObject BonusInvulnerability;
+    [SerializeField]
+    private GameObject BonusElongation;
+
     public void BonusActivated(BonusState bonus)
     {
         var balls = GameController.GetInstance().GetBallsList();
@@ -23,13 +30,14 @@ public class BonusController : MonoBehaviour {
                 GameObject ball = null;
                 for (int i = 0; i < GameController.GetInstance().GetBallsCount(); i++) {
                     if (balls[i] != null) {
-                        ball = Instantiate(balls[i], balls[i].transform.position, Quaternion.identity);
+                        ball = balls[i];
                         break;
                     }
                 }
                 if (ball != null) {
-                    ball.GetComponent<BallController>().ActivatedBall();
-                    GameController.GetInstance().AddBall(ball);
+                    var newBall = Instantiate(ball, ball.transform.position, Quaternion.identity);
+                    newBall.GetComponent<BallController>().ActivatedBall();
+                    GameController.GetInstance().AddBall(newBall);
                 }
                 break;
             case BonusState.elongation:
@@ -56,5 +64,20 @@ public class BonusController : MonoBehaviour {
 
     public List<GameObject> GetBonusList() {
         return bonusList;
+    }
+
+    public void CheckBonus(Vector3 SpawnPosition)
+    {
+        var chanceBonus = Random.Range(0, 100.99f);
+        if (chanceBonus > (100 - Data.BONUS_CHANCE_PRECENT_ELONGATION))
+        {
+            if (chanceBonus > (100 - Data.BONUS_CHANCE_PRECENT_MULTIPLICATION))
+                if (chanceBonus > (100 - Data.BONUS_CHANCE_PRECENT_INVULNEARBILITY))
+                    AddBonusItemToList(Instantiate(BonusInvulnerability, SpawnPosition, Quaternion.identity));
+                else
+                    AddBonusItemToList(Instantiate(BonusMultiplication, SpawnPosition, Quaternion.identity));
+            else
+                AddBonusItemToList(Instantiate(BonusElongation, SpawnPosition, Quaternion.identity));
+        }
     }
 }

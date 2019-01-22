@@ -202,6 +202,7 @@ public class GameController : MonoBehaviour {
 
     public void ReturnInitially() {
         uiController.OffEndGamePanel();
+        uiController.ScoreUpdate(0);
         blocksCount = 0;
         levelsBlocks.RemoveAll(levelsBlocks => { Destroy(levelsBlocks); return true; });
         bonusController.GetBonusList().RemoveAll(bonusController=> { Destroy(bonusController); return true; });
@@ -216,6 +217,7 @@ public class GameController : MonoBehaviour {
         if (blocksCount <= 0)
             SetStateEnd(false);
     }
+
     public void AddBlock(GameObject block,bool ignoreCount) {
         levelsBlocks.Add(block);
         if(!ignoreCount)

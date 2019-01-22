@@ -11,12 +11,6 @@ public class Block : MonoBehaviour
     private GameObject effectDestroy;
     [SerializeField]
     private TextMesh textHealth;
-    [SerializeField]
-    private GameObject BonusMultiplication;
-    [SerializeField]
-    private GameObject BonusInvulnerability;
-    [SerializeField]
-    private GameObject BonusElongation;
     private int Health;
     private bool Destroying = false;
 
@@ -82,23 +76,10 @@ public class Block : MonoBehaviour
         GameController.GetInstance().AddScore(score);
         if (!ignoreSubtraction)
             GameController.GetInstance().SubtractionBlock();
-        CheckBonus();
+        GameController.GetInstance().GetBonusController().CheckBonus(transform.position);
         Destroy(gameObject);
     }
 
 
-    private void CheckBonus()
-    {
-        var chanceBonus = Random.Range(0, 100.99f);
-        if (chanceBonus > (100-Data.BONUS_CHANCE_PRECENT_ELONGATION))
-        {
-            if (chanceBonus > (100-Data.BONUS_CHANCE_PRECENT_MULTIPLICATION))
-                if (chanceBonus > (100-Data.BONUS_CHANCE_PRECENT_INVULNEARBILITY))
-                    GameController.GetInstance().GetBonusController().AddBonusItemToList(Instantiate(BonusInvulnerability, transform.position, Quaternion.identity));
-                else
-                    GameController.GetInstance().GetBonusController().AddBonusItemToList(Instantiate(BonusMultiplication, transform.position, Quaternion.identity));
-            else
-                GameController.GetInstance().GetBonusController().AddBonusItemToList(Instantiate(BonusElongation, transform.position, Quaternion.identity));
-        }
-    }
+ 
 }

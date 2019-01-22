@@ -1455,6 +1455,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bac5fc450513c042b4c23771c0f7535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BonusMultiplication: {fileID: 1096216019812944, guid: bc375cc09d3a7004781147e1992efc8c,
+    type: 2}
+  BonusInvulnerability: {fileID: 1968273835862876, guid: 0d999b4f96e79f04c823e62f5dddc80a,
+    type: 2}
+  BonusElongation: {fileID: 1137258465730450, guid: 023f894766c3c2a4a8715b20f4b20ef8,
+    type: 2}
 --- !u!1 &584118163
 GameObject:
   m_ObjectHideFlags: 0
@@ -2547,8 +2553,6 @@ GameObject:
   - component: {fileID: 948694709}
   - component: {fileID: 948694708}
   - component: {fileID: 948694710}
-  - component: {fileID: 948694712}
-  - component: {fileID: 948694711}
   m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
@@ -2564,7 +2568,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 948694704}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 6e94c871cc8a7ff42a630040ceaab341, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -2579,7 +2583,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.9, y: 1}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!212 &948694706
 SpriteRenderer:
@@ -2683,36 +2687,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 6
---- !u!58 &948694711
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 948694704}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 6200000, guid: 6e94c871cc8a7ff42a630040ceaab341, type: 2}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.45, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.07
---- !u!58 &948694712
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 948694704}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 6200000, guid: 6e94c871cc8a7ff42a630040ceaab341, type: 2}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -0.45, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.07
 --- !u!1 &970843792
 GameObject:
   m_ObjectHideFlags: 0

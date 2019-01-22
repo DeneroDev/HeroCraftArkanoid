@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
+    private bool bonusActivate = false;
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Bonus")) {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Bonus") && !bonusActivate) {
+            bonusActivate = true;
             var bonus = collision.gameObject.GetComponent<BonusItem>();
             GameController.GetInstance().GetBonusController().BonusActivated(bonus.GetState());
             Destroy(collision.gameObject);
+            bonusActivate = false;
         }
     }
 

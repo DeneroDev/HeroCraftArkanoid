@@ -12,26 +12,34 @@ public class LevelGeneration : MonoBehaviour {
     [SerializeField]
     private List<Texture2D> levelsMap;
 
+    private List<Block> Blocks;
 
-
-    public void ImageGenerationLevel(int level) {
+    public List<Block> ImageGenerationLevel(int level) {
+        Blocks = new List<Block>();
         for (int i = 0; i <= 4; i++) {
             for (int j = 0; j <= 12; j++) {
                 if (levelsMap[level].GetPixel(j, i) == Color.black) {
-                    var block = Instantiate(basicBlock, new Vector3((-6f + ((j) * basicBlock.transform.localScale.x)), (-1 + ((i) * basicBlock.transform.localScale.y))), Quaternion.identity, transform);
-                    GameController.GetInstance().AddBlock(block,false);
+                    var blockGameobject = Instantiate(basicBlock, new Vector3((-6f + ((j) * basicBlock.transform.localScale.x)), (-1 + ((i) * basicBlock.transform.localScale.y))), Quaternion.identity, transform);
+                    Block[] blocks = blockGameobject.GetComponentsInChildren<Block>();
+                    for (int n = 0; n < blocks.Length; n++)
+                        Blocks.Add(blocks[n]);
                 }
                 if (levelsMap[level].GetPixel(j, i) == Color.red) {
-                    var block = Instantiate(unbreakableBlock, new Vector3((-6f + ((j) * basicBlock.transform.localScale.x)), (-1 + ((i) * basicBlock.transform.localScale.y))), Quaternion.identity, transform);
-                    GameController.GetInstance().AddBlock(block,true);
+                    var blockGameobject = Instantiate(unbreakableBlock, new Vector3((-6f + ((j) * basicBlock.transform.localScale.x)), (-1 + ((i) * basicBlock.transform.localScale.y))), Quaternion.identity, transform);
+                    Block[] blocks = blockGameobject.GetComponentsInChildren<Block>();
+                    for (int n = 0; n < blocks.Length; n++)
+                        Blocks.Add(blocks[n]);
                 }
                 if (levelsMap[level].GetPixel(j, i) == Color.magenta) {
-                    var block = Instantiate(repeatedlyBlock, new Vector3((-6f + ((j) * basicBlock.transform.localScale.x)), (-1 + ((i) * basicBlock.transform.localScale.y))), Quaternion.identity, transform);
-                    GameController.GetInstance().AddBlock(block,false);
-                   
+                    var blockGameobject = Instantiate(repeatedlyBlock, new Vector3((-6f + ((j) * basicBlock.transform.localScale.x)), (-1 + ((i) * basicBlock.transform.localScale.y))), Quaternion.identity, transform);
+                    Block[] blocks = blockGameobject.GetComponentsInChildren<Block>();
+                    for (int n=0; n< blocks.Length; n++)
+                        Blocks.Add(blocks[n]);
                 }
             }
         }
+        return Blocks;
+
     }
 
   

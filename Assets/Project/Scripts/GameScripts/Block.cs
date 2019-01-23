@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    private enum BlockType { basic, unbreakable, repeatedly }
+    public enum BlockType { basic, unbreakable, repeatedly }
     [SerializeField]
     private BlockType currentType;
     [SerializeField]
@@ -76,10 +76,13 @@ public class Block : MonoBehaviour
         GameController.GetInstance().AddScore(score);
         if (!ignoreSubtraction)
             GameController.GetInstance().SubtractionBlock();
-        GameController.GetInstance().GetBonusController().CheckBonus(transform.position);
+        GameController.GetInstance().CheckBonus(transform.position);
         Destroy(gameObject);
     }
 
+    public BlockType GetCurrentType() {
+        return currentType;
+    }
 
  
 }

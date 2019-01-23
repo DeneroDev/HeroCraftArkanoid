@@ -4,108 +4,54 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour {
     private static GameController instance;
-    public enum GameState { start, game, pause, end }
-    private GameState currentState = GameState.start;
+    public enum GameState { menu,game,pause,end }
+    private GameState currentState = GameState.menu;
     [Header("StartConfig")]
     [SerializeField]
     [Range(100, 1000)]
-    private float _startForce = 500;
+    private float startForce = 500;
     [SerializeField]
-    private Vector2 _startVector;
+    private Vector2 startVector;
     [Range(5, 10)]
     [SerializeField]
-    private float _maxVelocityBall = 10;
+    private float maxVelocityBall = 10;
     [Range(1, 5)]
     [SerializeField]
-    private float _minVelocityBall = 3;
+    private float minVelocityBall = 3;
     [Header("GameComponents")]
     [SerializeField]
-    private GameObject BallPrefab;
+    private GameObject ballPrefab;
+
+    //Касательно uiController-a, да GameController имеет зависимость от него, я думаю это оптимальный путь
+    //обновления view элементов и контроля анимаций, чтобы за них отвечал определенный контроллер. т.е uiController
+    //ничего не просит у GameController, обособленная сущность, к которой просто обращаются за изменением view
+    //Возможно я не понял комментария, буду очень благодарен, если натолкнете на правильную реализацию связи между ними.
     [SerializeField]
     private UIController uiController;
     [SerializeField]
-    private PlayerController playerC;
+    private PlayerController playerController;
     [SerializeField]
     private LevelGeneration levelGeneration;
     [SerializeField]
-    private SoundController SoundController;
+    private SoundController soundController;
     [SerializeField]
     private BonusController bonusController;
     private int score = 0;
     private int blocksCount;
     private int currentLevel = 1;
 
-    private List<GameObject> levelsBlocks = new List<GameObject>();
+    private List<Block> levelsBlocks;
     private List<GameObject> balls = new List<GameObject>();
 
-    public GameState CurrentState
-    {
-        get
-        {
-            return currentState;
-        }
+    public GameState CurrentState { get {return currentState;} set {currentState = value;}}
+    public float MinVelocityBall{get { return minVelocityBall;} set{minVelocityBall = value;}}
+    public float MaxVelocityBall{get{return maxVelocityBall;}set{maxVelocityBall = value;}}
+    public float StartForce { get {return startForce;} set {startForce = value;} }
+    public Vector2 StartVector { get { return startVector;} set {startVector = value;}}
 
-        set
-        {
-            currentState = value;
-        }
-    }
 
-    public float MinVelocityBall
-    {
-        get
-        {
-            return _minVelocityBall;
-        }
 
-        set
-        {
-            _minVelocityBall = value;
-        }
-    }
 
-    public float MaxVelocityBall
-    {
-        get
-        {
-            return _maxVelocityBall;
-        }
-
-        set
-        {
-            _maxVelocityBall = value;
-        }
-    }
-
-    public float StartForce
-    {
-        get
-        {
-            return _startForce;
-        }
-
-        set
-        {
-            _startForce = value;
-        }
-    }
-
-    public Vector2 StartVector
-    {
-        get
-        {
-            return _startVector;
-        }
-
-        set
-        {
-            _startVector = value;
-        }
-    }
-
-    public void CloseApplication() {
-        Application.Quit();
-    }
 
     public static GameController GetInstance() {
         if (instance == null)
@@ -129,31 +75,101 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    public void SetPauseState() {
-        CurrentState = GameState.pause;
-        uiController.OnPause();
-    }
-
-    public void BackFromPause() {
-        CurrentState = GameState.game;
-        uiController.OffPause();
-    }
-
-    public void GenerationLevel() {
-        levelGeneration.ImageGenerationLevel(currentLevel);
-    }
-
-    public void SetCurrentLevel(int level) {
+    public void SetCurrentLevel(int level)
+    {
         currentLevel = level;
     }
 
-    public void SetStateGame() {
+    public void SetStateGame()
+    {
         currentState = GameState.game;
-        var ball = Instantiate(BallPrefab, new Vector3(0, -4.6f, 0), Quaternion.identity);
+        var ball = Instantiate(ballPrefab, new Vector3(0, -4.6f, 0), Quaternion.identity);
         AddBall(ball);
         ball.GetComponent<BallController>().ActivatedBall();
         uiController.OffPreGamePanel();
     }
+
+    public void AddNewBall()
+    {
+        GameObject ball = null;
+        for (int i = 0; i < balls.Count; i++)
+        {
+            if (balls[i] != null)
+            {
+                ball = balls[i].gameObject;
+                break;
+            }
+        }
+        if (ball != null)
+        {
+            var newBall = Instantiate(ballPrefab, ball.transform.position, Quaternion.identity);
+            newBall.GetComponent<BallController>().ActivatedBall();
+            AddBall(newBall);
+        }
+    }
+
+
+    public void SetPauseState()
+    {
+        CurrentState = GameState.pause;
+        uiController.OnPause();
+    }
+
+    public void BackFromPause()
+    {
+        CurrentState = GameState.game;
+        uiController.OffPause();
+    }
+
+    public bool SetStateEnd(bool dead)
+    {
+        if (dead)
+        {
+            if ((balls.Count - 1) <= 0)
+            {
+                currentState = GameState.end;
+                uiController.OnEndGamePanel();
+                return false;
+            }
+            else
+                return true;
+        }
+        else
+        {
+            currentState = GameState.end;
+            uiController.OnEndGamePanel(score);
+            for (int i = 0; i < balls.Count; i++)
+            {
+                if (balls != null)
+                    balls[i].GetComponent<BallController>().SleepRb();
+            }
+            return false;
+        }
+    }
+
+    public void CheckBonus(Vector3 position) {
+        bonusController.CheckBonus(position);
+    }
+
+    public void AddScore(int score)
+    {
+        this.score += score;
+        uiController.ScoreUpdate(this.score);
+    }
+
+
+
+
+    public void GenerationLevel() {
+        levelsBlocks = levelGeneration.ImageGenerationLevel(currentLevel);
+        for (int i = 0; i < levelsBlocks.Count; i++) {
+            if(levelsBlocks[i].GetCurrentType()!=Block.BlockType.unbreakable)
+                blocksCount++;
+        }
+    }
+    
+
+ 
 
     public void AddBall(GameObject ball) {
         balls.Add(ball);
@@ -168,75 +184,40 @@ public class GameController : MonoBehaviour {
         Destroy(ball);
     }
 
-    public bool SetStateEnd(bool dead)
-    {
-        if (dead)
-        {
-            if ((balls.Count-1) <= 0) {
-                currentState = GameState.end;
-                uiController.OnEndGamePanel(dead);
-                return false;
-            }
-            else
-                return true;
-        }
-        else
-        {
-            currentState = GameState.end;
-            uiController.OnEndGamePanel(dead);
-            for (int i = 0; i < balls.Count; i++) {
-                if (balls != null)
-                    balls[i].GetComponent<BallController>().SleepRb();
-            }
-            return false;
-        }
-    }
-
-    public void AddScore(int score) {
-        this.score += score;
-        uiController.ScoreUpdate(this.score);
-    }
-
-    
-
-
+   
     public void ReturnInitially() {
         uiController.OffEndGamePanel();
         uiController.ScoreUpdate(0);
         blocksCount = 0;
-        levelsBlocks.RemoveAll(levelsBlocks => { Destroy(levelsBlocks); return true; });
-        bonusController.GetBonusList().RemoveAll(bonusController=> { Destroy(bonusController); return true; });
+        levelsBlocks.RemoveAll(levelsBlocks => { if(levelsBlocks!=null) Destroy(levelsBlocks.gameObject); return true; });
+        bonusController.RemoveAllBonus();
         balls.RemoveAll(balls => { Destroy(balls); return true; });
         score = 0;
-        playerC.transform.localPosition = new Vector3(0, -4.9f,0);
+        playerController.transform.localPosition = new Vector3(0, -4.9f,0);
     }
+
+
+
 
     public void SubtractionBlock() {
         blocksCount--;
-        SoundController.PlaySoundBreakSound();
+        soundController.PlaySoundBreakBlock();
         if (blocksCount <= 0)
             SetStateEnd(false);
     }
 
-    public void AddBlock(GameObject block,bool ignoreCount) {
-        levelsBlocks.Add(block);
-        if(!ignoreCount)
-            blocksCount = blocksCount+2;
-    }
+
 
 
     public PlayerController GetPlayerController() {
-        return playerC;
+        return playerController;
     }
 
     public List<GameObject> GetBallsList() {
         return balls;
     }
 
-    public BonusController GetBonusController()
-    {
-        return bonusController;
-    }
+  
 
     public void RetryCurrentLevel() {
         ReturnInitially();
@@ -260,5 +241,9 @@ public class GameController : MonoBehaviour {
 
     public int GetScore() {
         return score;
+    }
+
+    public void CloseApplication() {
+        Application.Quit();
     }
 }

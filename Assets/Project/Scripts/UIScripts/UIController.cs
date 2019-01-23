@@ -32,7 +32,9 @@ public class UIController : MonoBehaviour {
     [SerializeField]
     private RectTransform panelPauseGame;
 
-    // Use this for initialization
+    
+
+
     void Start () {
         DOTween.Init();
     }
@@ -73,16 +75,15 @@ public class UIController : MonoBehaviour {
         panelPreGame.DOAnchorPos(new Vector2(0, -1000), Data.TIME_SLIDE_ANIM_PANEL);
     }
 
-    public void OnEndGamePanel(bool dead)
+    public void OnEndGamePanel()
     {
-        if (dead)
-        {
             panelBadEndGame.DOAnchorPos(Vector2.zero, Data.TIME_SLIDE_ANIM_PANEL);
-        }
-        else {
+    }
+
+    public void OnEndGamePanel(int score)
+    {
             panelGoodEndGame.DOAnchorPos(Vector2.zero, Data.TIME_SLIDE_ANIM_PANEL);
-            finalScoreText.text = "SCORE:" + GameController.GetInstance().GetScore();
-        }
+            finalScoreText.text = "SCORE:" + score;
     }
 
 

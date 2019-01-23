@@ -12,51 +12,45 @@ public class BonusController : MonoBehaviour {
     [SerializeField]
     private GameObject BonusElongation;
 
-    public void BonusActivated(BonusState bonus)
-    {
-        var balls = GameController.GetInstance().GetBallsList();
-        switch (bonus)
+
+    public void BonusDetermination(BonusItem bonus) {
+        switch (bonus.GetState())
         {
+            case BonusState.elongation:
+                ActivateBonusElongation(gameObject);
+                break;
             case BonusState.invulnerability:
-                for (int i = 0; i < GameController.GetInstance().GetBallsCount(); i++) {
-                    if (balls[i] != null) {
-                        balls[i].transform.GetChild(1).gameObject.SetActive(true);
-                        balls[i].transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
-                    } 
-                }
-                Invoke("DeactivatedInvulnerabilityBonus", 1.5f);
+                ActivateBonusInvulnerability();
                 break;
             case BonusState.multiplication:
-                GameObject ball = null;
-                for (int i = 0; i < GameController.GetInstance().GetBallsCount(); i++) {
-                    if (balls[i] != null) {
-                        ball = balls[i];
-                        break;
-                    }
-                }
-                if (ball != null) {
-                    var newBall = Instantiate(ball, ball.transform.position, Quaternion.identity);
-                    newBall.GetComponent<BallController>().ActivatedBall();
-                    GameController.GetInstance().AddBall(newBall);
-                }
-                break;
-            case BonusState.elongation:
-                GameController.GetInstance().GetPlayerController().ActivatedElongationBonus();
+                ActivateBonusMultiplication();
                 break;
         }
     }
 
-    public void DeactivatedInvulnerabilityBonus()
+    public void ActivateBonusMultiplication()
+    {
+        GameController.GetInstance().AddNewBall();
+    }
+
+    public void ActivateBonusElongation(GameObject player)
+    {
+        player.AddComponent<EffectElongation>();
+    }
+
+    public void ActivateBonusInvulnerability()
     {
         var balls = GameController.GetInstance().GetBallsList();
-        for (int i = 0; i < balls.Count; i++) {
-            if (balls[i] != null) {
-                balls[i].transform.GetChild(1).gameObject.SetActive(false);
-                balls[i].transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+        for (int i = 0; i < balls.Count; i++)
+        {
+            if (balls[i] != null)
+            {
+                balls[i].AddComponent<EffectInvulnerability>();
             }
         }
-           
     }
+
+
 
     public void AddBonusItemToList(GameObject bonus) {
         bonusList.Add(bonus);
@@ -64,6 +58,10 @@ public class BonusController : MonoBehaviour {
 
     public List<GameObject> GetBonusList() {
         return bonusList;
+    }
+
+    public void RemoveAllBonus() {
+        bonusList.RemoveAll(bonusController => { Destroy(bonusController); return true; });
     }
 
     public void CheckBonus(Vector3 SpawnPosition)

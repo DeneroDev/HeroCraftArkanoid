@@ -7,7 +7,6 @@ public class DeadZone : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Ball")) {
-            if (GameController.GetInstance().SetStateEnd(true))
                 GameController.GetInstance().DeleteBall(collision.gameObject);
         }
 

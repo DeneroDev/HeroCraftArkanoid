@@ -12,10 +12,10 @@ public class LevelGeneration : MonoBehaviour {
     [SerializeField]
     private List<Texture2D> levelsMap;
 
-    private List<Block> Blocks;
+    private List<Block> Blocks = new List<Block>();
 
     public List<Block> ImageGenerationLevel(int level) {
-        Blocks = new List<Block>();
+        Blocks.RemoveAll(block => { Destroy(block.gameObject); return true; });
         for (int i = 0; i <= 4; i++) {
             for (int j = 0; j <= 12; j++) {
                 if (levelsMap[level].GetPixel(j, i) == Color.black) {

@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameController : MonoBehaviour {
     private static GameController instance;
-    public enum GameState { menu,game,pause,end }
+    public enum GameState { menu,pregame,game,postgame,pause,end }
     private GameState currentState = GameState.menu;
     [Header("StartConfig")]
     [SerializeField]
@@ -12,7 +13,7 @@ public class GameController : MonoBehaviour {
     private float startForce = 500;
     [SerializeField]
     private Vector2 startVector;
-    [Range(5, 10)]
+    [Range(3, 7)]
     [SerializeField]
     private float maxVelocityBall = 10;
     [Range(1, 5)]
@@ -22,36 +23,35 @@ public class GameController : MonoBehaviour {
     [SerializeField]
     private GameObject ballPrefab;
 
-    //Касательно uiController-a, да GameController имеет зависимость от него, я думаю это оптимальный путь
-    //обновления view элементов и контроля анимаций, чтобы за них отвечал определенный контроллер. т.е uiController
-    //ничего не просит у GameController, обособленная сущность, к которой просто обращаются за изменением view
-    //Возможно я не понял комментария, буду очень благодарен, если натолкнете на правильную реализацию связи между ними.
-    [SerializeField]
-    private UIController uiController;
     [SerializeField]
     private PlayerController playerController;
     [SerializeField]
     private LevelGeneration levelGeneration;
     [SerializeField]
     private SoundController soundController;
+    public enum BonusState { multiplication, invulnerability, elongation }
+    private List<GameObject> bonusList = new List<GameObject>();
+    [Header("BonusComponent")]
     [SerializeField]
-    private BonusController bonusController;
-    private int score = 0;
-    private int blocksCount;
-    private int currentLevel = 1;
-
-    private List<Block> levelsBlocks;
-    private List<GameObject> balls = new List<GameObject>();
-
+    private GameObject BonusMultiplication;
+    [SerializeField]
+    private GameObject BonusInvulnerability;
+    [SerializeField]
+    private GameObject BonusElongation;
     public GameState CurrentState { get {return currentState;} set {currentState = value;}}
     public float MinVelocityBall{get { return minVelocityBall;} set{minVelocityBall = value;}}
     public float MaxVelocityBall{get{return maxVelocityBall;}set{maxVelocityBall = value;}}
     public float StartForce { get {return startForce;} set {startForce = value;} }
     public Vector2 StartVector { get { return startVector;} set {startVector = value;}}
-
-
-
-
+    private int score = 0;
+    private int blocksCount;
+    private int currentLevel = 1;
+    private List<Block> levelsBlocks;
+    private List<GameObject> balls = new List<GameObject>();
+    private GameState previusPauseState;
+    [Header("UpdateUIMethods")]
+    public UnityEvent updateScoreUI;
+    public UnityEvent updateUI;
 
     public static GameController GetInstance() {
         if (instance == null)
@@ -80,88 +80,73 @@ public class GameController : MonoBehaviour {
         currentLevel = level;
     }
 
+    public void SetStatePreGame() {
+        GenerationLevel();
+        currentState = GameState.pregame;
+        updateUI.Invoke();
+    }
+
+    public void SetStatePostGame()
+    {
+        currentState = GameState.postgame;
+        updateUI.Invoke();
+    }
+
     public void SetStateGame()
     {
         currentState = GameState.game;
+        updateUI.Invoke();
         var ball = Instantiate(ballPrefab, new Vector3(0, -4.6f, 0), Quaternion.identity);
         AddBall(ball);
         ball.GetComponent<BallController>().ActivatedBall();
-        uiController.OffPreGamePanel();
     }
-
-    public void AddNewBall()
-    {
-        GameObject ball = null;
-        for (int i = 0; i < balls.Count; i++)
-        {
-            if (balls[i] != null)
-            {
-                ball = balls[i].gameObject;
-                break;
-            }
-        }
-        if (ball != null)
-        {
-            var newBall = Instantiate(ballPrefab, ball.transform.position, Quaternion.identity);
-            newBall.GetComponent<BallController>().ActivatedBall();
-            AddBall(newBall);
-        }
-    }
-
 
     public void SetPauseState()
     {
         CurrentState = GameState.pause;
-        uiController.OnPause();
+        updateUI.Invoke();
     }
 
     public void BackFromPause()
     {
         CurrentState = GameState.game;
-        uiController.OffPause();
+        updateUI.Invoke();
     }
 
-    public bool SetStateEnd(bool dead)
+    public void SetStateMenu()
     {
-        if (dead)
+        CurrentState = GameState.menu;
+        updateUI.Invoke();
+    }
+
+    public void SetStateEnd()
+    {
+        if (balls.Count <= 0)
         {
-            if ((balls.Count - 1) <= 0)
-            {
-                currentState = GameState.end;
-                uiController.OnEndGamePanel();
-                return false;
-            }
-            else
-                return true;
+            currentState = GameState.postgame;
+            updateUI.Invoke();
         }
         else
         {
-            currentState = GameState.end;
-            uiController.OnEndGamePanel(score);
+            currentState = GameState.postgame;
+            updateUI.Invoke();
             for (int i = 0; i < balls.Count; i++)
             {
                 if (balls != null)
                     balls[i].GetComponent<BallController>().SleepRb();
             }
-            return false;
         }
-    }
-
-    public void CheckBonus(Vector3 position) {
-        bonusController.CheckBonus(position);
     }
 
     public void AddScore(int score)
     {
         this.score += score;
-        uiController.ScoreUpdate(this.score);
+        updateScoreUI.Invoke();
     }
-
-
-
 
     public void GenerationLevel() {
         levelsBlocks = levelGeneration.ImageGenerationLevel(currentLevel);
+        blocksCount = 0;
         for (int i = 0; i < levelsBlocks.Count; i++) {
             if(levelsBlocks[i].GetCurrentType()!=Block.BlockType.unbreakable)
                 blocksCount++;
@@ -182,17 +167,20 @@ public class GameController : MonoBehaviour {
     public void DeleteBall(GameObject ball) {
         balls.Remove(ball);
         Destroy(ball);
+        if(balls.Count<=0)
+            SetStateEnd();
     }
 
    
     public void ReturnInitially() {
-        uiController.OffEndGamePanel();
-        uiController.ScoreUpdate(0);
-        blocksCount = 0;
-        levelsBlocks.RemoveAll(levelsBlocks => { if(levelsBlocks!=null) Destroy(levelsBlocks.gameObject); return true; });
-        bonusController.RemoveAllBonus();
-        balls.RemoveAll(balls => { Destroy(balls); return true; });
+        // uiController.OffEndGamePanel();
+        // uiController.ScoreUpdate(0);
         score = 0;
+        updateScoreUI.Invoke();
+        levelsBlocks.RemoveAll(levelsBlocks => { if(levelsBlocks!=null) Destroy(levelsBlocks.gameObject); return true; });
+        bonusList.RemoveAll(bonusItem => { Destroy(bonusItem); return true; });
+        balls.RemoveAll(balls => { Destroy(balls); return true; });
+
         playerController.transform.localPosition = new Vector3(0, -4.9f,0);
     }
 
@@ -203,21 +191,13 @@ public class GameController : MonoBehaviour {
         blocksCount--;
         soundController.PlaySoundBreakBlock();
         if (blocksCount <= 0)
-            SetStateEnd(false);
+            SetStateEnd();
     }
 
 
 
 
-    public PlayerController GetPlayerController() {
-        return playerController;
-    }
 
-    public List<GameObject> GetBallsList() {
-        return balls;
-    }
-
-  
 
     public void RetryCurrentLevel() {
         ReturnInitially();
@@ -229,7 +209,8 @@ public class GameController : MonoBehaviour {
         if (currentLevel == 4)
         {
             ReturnInitially();
-            uiController.OnMenu();
+            CurrentState = GameState.menu;
+            updateUI.Invoke();
         }
         else
         {
@@ -246,4 +227,79 @@ public class GameController : MonoBehaviour {
     public void CloseApplication() {
         Application.Quit();
     }
+
+    #region Bonus
+    public void BonusDetermination(BonusItem bonus)
+    {
+        switch (bonus.GetState())
+        {
+            case BonusState.elongation:
+                ActivateBonusElongation();
+                break;
+            case BonusState.invulnerability:
+                ActivateBonusInvulnerability();
+                break;
+            case BonusState.multiplication:
+                ActivateBonusMultiplication();
+                break;
+        }
+    }
+
+    public void ActivateBonusMultiplication()
+    {
+        GameObject ball = null;
+        for (int i = 0; i < balls.Count; i++)
+        {
+            if (balls[i] != null)
+            {
+                ball = balls[i].gameObject;
+                break;
+            }
+        }
+        if (ball != null)
+        {
+            var newBall = Instantiate(ballPrefab, ball.transform.position, Quaternion.identity);
+            newBall.GetComponent<BallController>().ActivatedBall();
+            AddBall(newBall);
+        }
+    }
+
+    public void ActivateBonusElongation()
+    {
+        playerController.gameObject.AddComponent<EffectElongation>();
+    }
+
+    public void ActivateBonusInvulnerability()
+    {
+        for (int i = 0; i < balls.Count; i++)
+        {
+            if (balls[i] != null)
+            {
+                balls[i].AddComponent<EffectInvulnerability>();
+            }
+        }
+    }
+
+
+
+    public void AddBonusItemToList(GameObject bonus)
+    {
+        bonusList.Add(bonus);
+    }
+
+    public void CheckBonus(Vector3 SpawnPosition)
+    {
+        var chanceBonus = Random.Range(0, 100.99f);
+        if (chanceBonus > (100 - Data.BONUS_CHANCE_PRECENT_ELONGATION))
+        {
+            if (chanceBonus > (100 - Data.BONUS_CHANCE_PRECENT_MULTIPLICATION))
+                if (chanceBonus > (100 - Data.BONUS_CHANCE_PRECENT_INVULNEARBILITY))
+                    AddBonusItemToList(Instantiate(BonusInvulnerability, SpawnPosition, Quaternion.identity));
+                else
+                    AddBonusItemToList(Instantiate(BonusMultiplication, SpawnPosition, Quaternion.identity));
+            else
+                AddBonusItemToList(Instantiate(BonusElongation, SpawnPosition, Quaternion.identity));
+        }
+    }
+    #endregion
 }

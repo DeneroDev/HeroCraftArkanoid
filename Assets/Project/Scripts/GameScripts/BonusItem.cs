@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class BonusItem : MonoBehaviour {
     [SerializeField]
-    private BonusController.BonusState bonusState;
+    private GameController.BonusState bonusState;
 
-    public BonusController.BonusState GetState() {
+    public GameController.BonusState GetState() {
         return bonusState;
     }
 }

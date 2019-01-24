@@ -31,7 +31,6 @@ public class UIController : MonoBehaviour {
     private Text finalScoreText;
     [SerializeField]
     private RectTransform panelPauseGame;
-
     
 
 
@@ -39,9 +38,42 @@ public class UIController : MonoBehaviour {
         DOTween.Init();
     }
 
+    public void UpdateUI()
+    {
+        switch (GameController.GetInstance().CurrentState)
+        {
+            case GameController.GameState.menu:
+                    OffGame();
+                    OffPreGamePanel();
+                    OffEndGamePanel();
+                    OnMenu();
+                break;
+            case GameController.GameState.pregame:
+                    OffPanelLevel();
+                    OffEndGamePanel();
+                    OffMenu();
+                    OnPreGamePanel();
+                break;
+            case GameController.GameState.game:
+                    OffPause();
+                    OnGame();
+                break;
+            case GameController.GameState.postgame:
+                    OnEndGamePanel();
+                break;
+            case GameController.GameState.pause:
+                    OnPause();
+                break;
+            case GameController.GameState.end:
+                    OffGame();
+                    OffEndGamePanel();
+                break;
+
+        }
+    }
+
 
     public void OnMenu() {
-        OffGame();
         BackgroundUIMenu.DOAnchorPos(new Vector2(0, 0), Data.TIME_SLIDE_ANIM_PANEL);
         StartGameBtn.DOAnchorPos(new Vector2(-395, 400), Data.TIME_SLIDE_ANIM_PANEL);
         SettingGameBtn.DOAnchorPos(new Vector2(-240, 250), Data.TIME_SLIDE_ANIM_PANEL);
@@ -63,8 +95,6 @@ public class UIController : MonoBehaviour {
         StartGameBtn.DOAnchorPos(new Vector2(395, 400), Data.TIME_SLIDE_ANIM_PANEL);
         SettingGameBtn.DOAnchorPos(new Vector2(240, 250), Data.TIME_SLIDE_ANIM_PANEL);
         QuitGameBtn.DOAnchorPos(new Vector2(150, 110), Data.TIME_SLIDE_ANIM_PANEL);
-        OnGame();
-        OnPreGamePanel();
     }
 
     public void OnPreGamePanel() {
@@ -77,13 +107,13 @@ public class UIController : MonoBehaviour {
 
     public void OnEndGamePanel()
     {
+        if ((GameController.GetInstance().GetBallsCount()) <= 0)
             panelBadEndGame.DOAnchorPos(Vector2.zero, Data.TIME_SLIDE_ANIM_PANEL);
-    }
-
-    public void OnEndGamePanel(int score)
-    {
+        else {
             panelGoodEndGame.DOAnchorPos(Vector2.zero, Data.TIME_SLIDE_ANIM_PANEL);
-            finalScoreText.text = "SCORE:" + score;
+            finalScoreText.text = "SCORE:" + GameController.GetInstance().GetScore().ToString();
+        }
+       
     }
 
 
@@ -94,6 +124,7 @@ public class UIController : MonoBehaviour {
     }
 
     public void OnGame() {
+        OffPreGamePanel();
         textScore.rectTransform.DOAnchorPos(new Vector2(150, -150), Data.TIME_SLIDE_ANIM_PANEL);
         pauseBtn.DOAnchorPos(new Vector2(-200, -150), Data.TIME_SLIDE_ANIM_PANEL);
     }
@@ -110,10 +141,10 @@ public class UIController : MonoBehaviour {
 
     public void OffPause()
     {
-        panelPauseGame.DOAnchorPos(new Vector2(0,-1000), Data.TIME_SLIDE_ANIM_PANEL);
+        panelPauseGame.DOAnchorPos(new Vector2(0,1000), Data.TIME_SLIDE_ANIM_PANEL);
     }
 
-    public void ScoreUpdate(int score) {
-        textScore.text = "SCORE:"+score;
+    public void ScoreUpdate() {
+        textScore.text = "SCORE:"+GameController.GetInstance().GetScore();
     }
 }

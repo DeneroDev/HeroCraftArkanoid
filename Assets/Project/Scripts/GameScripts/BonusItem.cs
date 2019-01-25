@@ -4,9 +4,17 @@ using UnityEngine;
 
 public class BonusItem : MonoBehaviour {
     [SerializeField]
-    private GameController.BonusState bonusState;
+    private BonusController.BonusState bonusState;
 
-    public GameController.BonusState GetState() {
+    public BonusController.BonusState GetState() {
         return bonusState;
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            GameController.GetInstance().BonusController.BonusDetermination(this);
+            Destroy(gameObject);
+        }
     }
 }

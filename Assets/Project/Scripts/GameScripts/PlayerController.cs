@@ -5,14 +5,13 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
 
-    public void OnTriggerEnter2D(Collider2D collision)
+    public void ResetPlayer(DataManager dataManager)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Bonus")) {
-            var bonus = collision.gameObject.GetComponent<BonusItem>();
-            GameController.GetInstance().BonusDetermination(bonus);
-            Destroy(collision.gameObject);
-        }
+        transform.localPosition = dataManager.StartPositionPlayer;
+        transform.localScale = dataManager.SizePlayer;
     }
 
- 
+
+
+
 }

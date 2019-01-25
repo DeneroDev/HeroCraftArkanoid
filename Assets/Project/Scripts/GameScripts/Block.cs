@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Block : MonoBehaviour
 {
@@ -27,19 +25,20 @@ public class Block : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Ball") && !Destroying)
         {
+            var dataManager = GameController.GetInstance().DataManager;
             switch (currentType)
             {
                 case BlockType.basic:
-                    DestroyBlock(Data.POINT_FOR_BASIC_BLOCK, false);
+                    DestroyBlock(dataManager.PointForBasicBlock, false);
                     break;
                 case BlockType.repeatedly:
                     Health -= 1;
                     if (Health <= 0)
-                        DestroyBlock(Data.POINT_FOR_REPEATEDLY_BLOCK, false);
+                        DestroyBlock(dataManager.PointForRepeatedlyBlock, false);
                     else
                     {
                         textHealth.text = Health.ToString();
-                        GameController.GetInstance().AddScore(25);
+                        dataManager.AddScore(dataManager.PointForRepeatedlyBlock/2);
                     }
                     break;
                 case BlockType.unbreakable: break;
@@ -52,16 +51,17 @@ public class Block : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("BallInvulnerability") && !Destroying)
         {
+            var dataManager = GameController.GetInstance().DataManager;
             switch (currentType)
             {
                 case BlockType.basic:
-                    DestroyBlock(Data.POINT_FOR_BASIC_BLOCK, false);
+                    DestroyBlock(dataManager.PointForBasicBlock, false);
                     break;
                 case BlockType.repeatedly:
-                    DestroyBlock(Data.POINT_FOR_REPEATEDLY_BLOCK, false);
+                    DestroyBlock(dataManager.PointForRepeatedlyBlock, false);
                     break;
                 case BlockType.unbreakable:
-                    DestroyBlock(Data.POINT_FOR_BASIC_BLOCK, true);
+                    DestroyBlock(dataManager.PointForBasicBlock, true);
                     break;
             }
         }
@@ -73,10 +73,10 @@ public class Block : MonoBehaviour
     {
         Destroying = true;
         Instantiate(effectDestroy, transform.position, Quaternion.identity);
-        GameController.GetInstance().AddScore(score);
+        GameController.GetInstance().DataManager.AddScore(score);
         if (!ignoreSubtraction)
-            GameController.GetInstance().SubtractionBlock();
-        GameController.GetInstance().CheckBonus(transform.position);
+            GameController.GetInstance().LevelGeneration.SubtractionBlock();
+        CheckBonus(transform.position);
         Destroy(gameObject);
     }
 
@@ -84,5 +84,21 @@ public class Block : MonoBehaviour
         return currentType;
     }
 
- 
+    public void CheckBonus(Vector3 SpawnPosition)
+    {
+        var dataManager = GameController.GetInstance().DataManager;
+        var chanceBonus = Random.Range(0, 100.99f);
+        var parent = GameController.GetInstance().LevelGeneration.transform;
+        if (chanceBonus > (100 - dataManager.BonusChancePrecentEllongation))
+        {
+            if (chanceBonus > (100 - dataManager.BonusChancePrecentMultiplication))
+                if (chanceBonus > (100 - dataManager.BonusChancePrecentInvulnerability))
+                    Instantiate(Resources.Load("BonusInvulnerability"), SpawnPosition, Quaternion.identity,parent);
+                else
+                    Instantiate(Resources.Load("BonusMultiplication"), SpawnPosition, Quaternion.identity,parent);
+            else
+                Instantiate(Resources.Load("BonusElongation"), SpawnPosition, Quaternion.identity,parent);
+        }
+    }
+
 }

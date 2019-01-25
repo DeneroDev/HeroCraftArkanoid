@@ -4,18 +4,22 @@ using UnityEngine;
 
 public class BallController : MonoBehaviour {
     private Rigidbody2D rigidbody2d;
+    private DataManager dataManager;
 
+    private void Awake()
+    {
+        dataManager = GameController.GetInstance().DataManager;
+    }
 
-	void Update () {
+    void Update () {
         if(GameController.GetInstance().CurrentState == GameController.GameState.game)
-            SpeedLimittedBall(GameController.GetInstance().MaxVelocityBall, GameController.GetInstance().MinVelocityBall);
+            SpeedLimittedBall(dataManager.maxVelocityBall, dataManager.minVelocityBall);
     }
 
     public void ActivatedBall() {
         if (rigidbody2d == null)
             rigidbody2d = GetComponent<Rigidbody2D>();
-        Debug.Log(GameController.GetInstance().StartVector);
-       rigidbody2d.AddForce(GameController.GetInstance().StartVector* GameController.GetInstance().StartForce);
+       rigidbody2d.AddForce(dataManager.startVector* dataManager.startForce);
     }
 
     public void SleepRb() {

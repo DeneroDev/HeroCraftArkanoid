@@ -4,22 +4,17 @@ using UnityEngine;
 
 public class BallController : MonoBehaviour {
     private Rigidbody2D rigidbody2d;
-    private DataManager dataManager;
 
-    private void Awake()
-    {
-        dataManager = GameController.GetInstance().DataManager;
-    }
 
     void Update () {
         if(GameController.GetInstance().CurrentState == GameController.GameState.game)
-            SpeedLimittedBall(dataManager.maxVelocityBall, dataManager.minVelocityBall);
+            SpeedLimittedBall(GameController.GetInstance().GameSetting.maxVelocityBall, GameController.GetInstance().GameSetting.minVelocityBall);
     }
 
     public void ActivatedBall() {
         if (rigidbody2d == null)
             rigidbody2d = GetComponent<Rigidbody2D>();
-       rigidbody2d.AddForce(dataManager.startVector* dataManager.startForce);
+       rigidbody2d.AddForce(GameController.GetInstance().GameSetting.startVector* GameController.GetInstance().GameSetting.startForce);
     }
 
     public void SleepRb() {
@@ -28,23 +23,11 @@ public class BallController : MonoBehaviour {
 
     private void SpeedLimittedBall(float maxVelocity, float minVelocity)
     {
-                if (rigidbody2d.velocity.x < -maxVelocity)
-                    rigidbody2d.velocity = new Vector2(-maxVelocity, rigidbody2d.velocity.y);
-                if (rigidbody2d.velocity.y < -maxVelocity)
-                    rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, -maxVelocity);
-                if (rigidbody2d.velocity.x > maxVelocity)
-                    rigidbody2d.velocity = new Vector2(maxVelocity, rigidbody2d.velocity.y);
-                if (rigidbody2d.velocity.y > maxVelocity)
-                    rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, maxVelocity);
-                if (rigidbody2d.velocity.y < minVelocity && rigidbody2d.velocity.y > 0)
-                    rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, minVelocity);
-                if (rigidbody2d.velocity.x < minVelocity && rigidbody2d.velocity.x > 0)
-                    rigidbody2d.velocity = new Vector2(minVelocity, rigidbody2d.velocity.y);
-                if (rigidbody2d.velocity.y > -minVelocity && rigidbody2d.velocity.y < 0)
-                    rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, -minVelocity);
-                if (rigidbody2d.velocity.x > -minVelocity && rigidbody2d.velocity.x < 0)
-                    rigidbody2d.velocity = new Vector2(-minVelocity, rigidbody2d.velocity.y);
-        //Debug.Log("X:"+rigidbody2d.velocity.x +"/ Y:" +rigidbody2d.velocity.y);
+        float i = (rigidbody2d.velocity.x / Mathf.Abs(rigidbody2d.velocity.x));
+        float j = (rigidbody2d.velocity.y / Mathf.Abs(rigidbody2d.velocity.y));
+        rigidbody2d.velocity = new Vector2(Mathf.Clamp(rigidbody2d.velocity.x, i*minVelocity, i * maxVelocity), Mathf.Clamp(rigidbody2d.velocity.y, j * minVelocity, j * maxVelocity));
+           
+        Debug.Log("X:"+rigidbody2d.velocity.x +"/ Y:" +rigidbody2d.velocity.y);
     }
 
     }

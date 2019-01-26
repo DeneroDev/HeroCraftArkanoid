@@ -146,6 +146,7 @@ MonoBehaviour:
   bonusController: {fileID: 883641616}
   ballManager: {fileID: 322735754}
   dataManager: {fileID: 2062472210}
+  gameSetting: {fileID: 11400000, guid: 721c76ad7b80df8439b27e02f311c8c7, type: 2}
   EventUpdateUI:
     m_PersistentCalls:
       m_Calls:
@@ -5065,23 +5066,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d20b08c44a504c4ca5df16df7b89ece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startForce: 500
-  startVector: {x: 0.1, y: 0.3}
-  maxVelocityBall: 4
-  minVelocityBall: 3
-  StartPositionPlayer: {x: 0, y: -4.9, z: 0}
-  SpawnPositionBall: {x: 0, y: -4.6, z: 0}
-  PointForBasicBlock: 50
-  PointForRepeatedlyBlock: 100
-  BonusChancePrecentEllongation: 20
-  SizePlayer: {x: 1.5, y: 0.2, z: 0}
-  SizePlayerOnElongation: {x: 3, y: 0.2, z: 0}
-  BonusChancePrecentInvulnerability: 5
-  SizeBall: {x: 0.4, y: 0.4, z: 0.4}
-  SizeBallOnInvulnerability: {x: 0.6, y: 0.6, z: 0.6}
-  BonusChancePrecentMultiplication: 10
-  TimeElongation: 5
-  TimeInvulnerability: 3
   EventUpdateScoreUI:
     m_PersistentCalls:
       m_Calls:

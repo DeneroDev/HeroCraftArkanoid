@@ -20,6 +20,8 @@ public class GameController : MonoBehaviour {
     private BallManager ballManager;
     [SerializeField]
     private DataManager dataManager;
+    [SerializeField]
+    private GameSetting gameSetting;
     public GameState CurrentState { get {return currentState;} set {currentState = value;}}
     public SoundController SoundController{get{ return soundController;}}
     public LevelGeneration LevelGeneration{get{return levelGeneration;}}
@@ -27,6 +29,8 @@ public class GameController : MonoBehaviour {
     public BonusController BonusController{get{return bonusController;}}
     public BallManager BallManager{get{return ballManager;}}
     public DataManager DataManager{get{return dataManager;}}
+    public GameSetting GameSetting{get{return gameSetting;}}
+
     private int currentLevel = 1;
     private bool initGame = false;
     private GameState previusPauseState;
@@ -101,7 +105,7 @@ public class GameController : MonoBehaviour {
         levelGeneration.ClearLevel();
         ballManager.RemoveAllBall();
         dataManager.RefreshScore();
-        PlayerController.ResetPlayer(dataManager);
+        PlayerController.ResetPlayer(gameSetting);
     }
 
 

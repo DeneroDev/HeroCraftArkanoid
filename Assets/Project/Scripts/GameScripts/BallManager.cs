@@ -51,7 +51,7 @@ public class BallManager : MonoBehaviour {
     }
 
     public void CreateBall() {
-        AddBall(Instantiate(ballPrefab, GameController.GetInstance().DataManager.SpawnPositionBall, Quaternion.identity));
+        AddBall(Instantiate(ballPrefab, GameController.GetInstance().GameSetting.SpawnPositionBall, Quaternion.identity));
     }
 
 

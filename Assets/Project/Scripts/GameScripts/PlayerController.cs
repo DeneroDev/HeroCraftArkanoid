@@ -5,10 +5,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
 
-    public void ResetPlayer(DataManager dataManager)
+    public void ResetPlayer(GameSetting gameSetting)
     {
-        transform.localPosition = dataManager.StartPositionPlayer;
-        transform.localScale = dataManager.SizePlayer;
+        transform.localPosition = gameSetting.StartPositionPlayer;
+        transform.localScale = gameSetting.SizePlayer;
     }
 
 

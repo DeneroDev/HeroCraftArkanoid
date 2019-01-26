@@ -25,20 +25,20 @@ public class Block : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Ball") && !Destroying)
         {
-            var dataManager = GameController.GetInstance().DataManager;
+            var gameSetting = GameController.GetInstance().GameSetting;
             switch (currentType)
             {
                 case BlockType.basic:
-                    DestroyBlock(dataManager.PointForBasicBlock, false);
+                    DestroyBlock(gameSetting.PointForBasicBlock, false);
                     break;
                 case BlockType.repeatedly:
                     Health -= 1;
                     if (Health <= 0)
-                        DestroyBlock(dataManager.PointForRepeatedlyBlock, false);
+                        DestroyBlock(gameSetting.PointForRepeatedlyBlock, false);
                     else
                     {
                         textHealth.text = Health.ToString();
-                        dataManager.AddScore(dataManager.PointForRepeatedlyBlock/2);
+                        GameController.GetInstance().DataManager.AddScore(gameSetting.PointForRepeatedlyBlock/2);
                     }
                     break;
                 case BlockType.unbreakable: break;
@@ -51,17 +51,17 @@ public class Block : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("BallInvulnerability") && !Destroying)
         {
-            var dataManager = GameController.GetInstance().DataManager;
+            var gameSetting = GameController.GetInstance().GameSetting;
             switch (currentType)
             {
                 case BlockType.basic:
-                    DestroyBlock(dataManager.PointForBasicBlock, false);
+                    DestroyBlock(gameSetting.PointForBasicBlock, false);
                     break;
                 case BlockType.repeatedly:
-                    DestroyBlock(dataManager.PointForRepeatedlyBlock, false);
+                    DestroyBlock(gameSetting.PointForRepeatedlyBlock, false);
                     break;
                 case BlockType.unbreakable:
-                    DestroyBlock(dataManager.PointForBasicBlock, true);
+                    DestroyBlock(gameSetting.PointForBasicBlock, true);
                     break;
             }
         }
@@ -86,13 +86,13 @@ public class Block : MonoBehaviour
 
     public void CheckBonus(Vector3 SpawnPosition)
     {
-        var dataManager = GameController.GetInstance().DataManager;
+        var gameSetting = GameController.GetInstance().GameSetting;
         var chanceBonus = Random.Range(0, 100.99f);
         var parent = GameController.GetInstance().LevelGeneration.transform;
-        if (chanceBonus > (100 - dataManager.BonusChancePrecentEllongation))
+        if (chanceBonus > (100 - gameSetting.BonusChancePrecentEllongation))
         {
-            if (chanceBonus > (100 - dataManager.BonusChancePrecentMultiplication))
-                if (chanceBonus > (100 - dataManager.BonusChancePrecentInvulnerability))
+            if (chanceBonus > (100 - gameSetting.BonusChancePrecentMultiplication))
+                if (chanceBonus > (100 - gameSetting.BonusChancePrecentInvulnerability))
                     Instantiate(Resources.Load("BonusInvulnerability"), SpawnPosition, Quaternion.identity,parent);
                 else
                     Instantiate(Resources.Load("BonusMultiplication"), SpawnPosition, Quaternion.identity,parent);

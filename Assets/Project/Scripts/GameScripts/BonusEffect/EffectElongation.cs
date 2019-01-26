@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class EffectElongation : MonoBehaviour,IEffect {
 
-    private DataManager dataManager;
+    private GameSetting gameSetting;
     public void Activate()
     {
-        transform.localScale = dataManager.SizePlayerOnElongation;
-        Invoke("Deactivate", dataManager.TimeElongation);
+        transform.localScale = gameSetting.SizePlayerOnElongation;
+        Invoke("Deactivate", gameSetting.TimeElongation);
     }
 
     public void Deactivate()
     {
-        transform.localScale = dataManager.SizePlayer;
+        transform.localScale = gameSetting.SizePlayer;
         Destroy(this);
     }
 
@@ -21,7 +21,7 @@ public class EffectElongation : MonoBehaviour,IEffect {
 
     private void Awake()
     {
-        dataManager = GameController.GetInstance().DataManager;
+        gameSetting = GameController.GetInstance().GameSetting;
     }
 
     void Start ()

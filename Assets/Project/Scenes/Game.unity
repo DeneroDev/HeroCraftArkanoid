@@ -3131,7 +3131,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c71f3bb4c7664574bbe8ddf7bc1fe17f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BreakBlockSounds: {fileID: 8300000, guid: ec3d5a642220fb947988b4575baebde8, type: 3}
+  BreakBlockSounds:
+  - {fileID: 8300000, guid: ec3d5a642220fb947988b4575baebde8, type: 3}
+  - {fileID: 8300000, guid: dcb372ad84fb35d46bec4a54ab728d9d, type: 3}
 --- !u!82 &1211987640
 AudioSource:
   m_ObjectHideFlags: 0

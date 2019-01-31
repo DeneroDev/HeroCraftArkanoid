@@ -40,14 +40,16 @@ public class GameController : MonoBehaviour {
 
 
     public static GameController GetInstance() {
-        if (instance == null)
-            instance = new GameController();
         return instance;
     }
 
-    void Start() {
+    private void Awake()
+    {
         instance = this;
-        SetGameState("menu");
+    }
+
+    void Start() {
+        SetGameState(GameState.menu);
     }
 
 
@@ -67,35 +69,43 @@ public class GameController : MonoBehaviour {
         currentLevel = level;
     }
 
-    public void SetGameState(string state) {
-        var newState = (GameState)System.Enum.Parse(typeof(GameState), state, true);
+    public void SetGameState(GameState newState)
+    {
         previusPauseState = CurrentState;
         CurrentState = newState;
-        if (CurrentState == GameState.pregame) {
-            LevelGeneration.ImageGenerationLevel(currentLevel);
+        switch (CurrentState) {
+            case GameState.pregame:
+                LevelGeneration.ImageGenerationLevel(currentLevel);
+                break;
+            case GameState.game:
+                if (!initGame && previusPauseState != GameState.pause)
+                {
+                    initGame = true;
+                    ballManager.CreateBall();
+                    ballManager.ActivateAllBalls();
+                }
+                break;
+            case GameState.goodend:
+                initGame = false;
+                ballManager.SleepAllBalls();
+                break;
+            case GameState.badend:
+                initGame = false;
+                ballManager.RemoveAllBall();
+                break;
+            case GameState.menu:
+                ReturnInitially();
+                break;
         }
-        if (CurrentState == GameState.game) {
-            if (!initGame && previusPauseState!=GameState.pause) {
-                initGame = true;
-                ballManager.CreateBall();
-                ballManager.ActivateAllBalls();
-            }
-        }
-        if (CurrentState == GameState.goodend) {
-            initGame = false;
-            ballManager.SleepAllBalls();
-        }
-        if (CurrentState == GameState.badend)
-        {
-            initGame = false;
-            ballManager.RemoveAllBall();
-        }
-        if (CurrentState == GameState.menu){
-            ReturnInitially();
-        }
-        if(EventUpdateUI != null)
+
+        if (EventUpdateUI != null)
             EventUpdateUI.Invoke();
     }
+
+    public void SetGameState(string state) {
+        var newState = (GameState)System.Enum.Parse(typeof(GameState), state, true);
+        SetGameState(newState);
+        }
 
 
   
@@ -111,7 +121,7 @@ public class GameController : MonoBehaviour {
 
     public void RetryCurrentLevel() {
         ReturnInitially();
-        SetGameState("pregame");
+        SetGameState(GameState.pregame);
         if (EventUpdateUI != null)
             EventUpdateUI.Invoke();
     }
@@ -121,13 +131,13 @@ public class GameController : MonoBehaviour {
         if (currentLevel == 4)
         {
             ReturnInitially();
-            SetGameState("menu");
+            SetGameState(GameState.menu);
         }
         else
         {
             ReturnInitially();
             SetCurrentLevel(currentLevel+1);
-            SetGameState("pregame");
+            SetGameState(GameState.pregame);
         }
         if (EventUpdateUI != null)
             EventUpdateUI.Invoke();
@@ -141,11 +151,11 @@ public class GameController : MonoBehaviour {
     public void CheckEndGame() {
         if (ballManager.GetBallsCount() <= 0)
         {
-            SetGameState("badend");
+            SetGameState(GameState.badend);
         }
         if(levelGeneration.blocksCount<=0)
         {
-            SetGameState("goodend");
+            SetGameState(GameState.goodend);
         }
     }
 

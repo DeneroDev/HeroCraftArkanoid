@@ -6,7 +6,7 @@ using UnityEngine;
 public class SoundController : MonoBehaviour {
 
     [SerializeField]
-    AudioClip BreakBlockSounds;
+    List<AudioClip> BreakBlockSounds;
 
     private AudioSource audioSource;
 
@@ -18,7 +18,8 @@ public class SoundController : MonoBehaviour {
     }
 
     public void PlaySoundBreakBlock() {
-        audioSource.clip = BreakBlockSounds;
+        audioSource.clip = BreakBlockSounds[Random.Range(0, BreakBlockSounds.Count-1)];
+        Debug.Log(BreakBlockSounds.Count);
         audioSource.Play();
     }
 }

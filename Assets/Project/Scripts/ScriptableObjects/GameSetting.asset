@@ -13,8 +13,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startForce: 500
   startVector: {x: 0.3, y: 0.3}
-  maxVelocityBall: 5
-  minVelocityBall: 5
+  maxVelocityBall: 4
+  minVelocityBall: 4
   StartPositionPlayer: {x: 0, y: -4.9, z: 0}
   SpawnPositionBall: {x: 0, y: -4.6, z: 0}
   PointForBasicBlock: 50
